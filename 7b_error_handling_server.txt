@@ -1,39 +1,16 @@
-"""
-Flask server for the Emotion Detection application.
-
-Routes:
-- / : Home page (renders index.html)
-- /emotionDetector : Returns formatted emotion analysis for input text
-"""
-
 from flask import Flask, render_template, request
-
 from EmotionDetection import emotion_detector
-
-HOST = "0.0.0.0"
-PORT = 5000
 
 app = Flask(__name__)
 
 
 @app.route("/")
 def home():
-    """Render the home page."""
     return render_template("index.html")
 
 
 @app.route("/emotionDetector", methods=["GET"])
 def emotion_detector_api():
-    """
-    Run emotion detection on the user input text and return a formatted response.
-
-    Query parameter:
-    - textToAnalyze: text to analyze
-
-    Returns:
-    - Error message for blank/invalid text
-    - Otherwise, formatted emotion scores and dominant emotion
-    """
     text_to_analyze = request.args.get("textToAnalyze", "")
 
     result = emotion_detector(text_to_analyze)
@@ -41,15 +18,16 @@ def emotion_detector_api():
     if result.get("dominant_emotion") is None:
         return "Invalid text! Please try again!"
 
-    return (
-        "For the given statement, the system response is "
+    response_text = (
+        f"For the given statement, the system response is "
         f"'anger': {result['anger']}, 'disgust': {result['disgust']}, "
         f"'fear': {result['fear']}, 'joy': {result['joy']} and "
         f"'sadness': {result['sadness']}. "
         f"The dominant emotion is {result['dominant_emotion']}."
     )
 
+    return response_text
+
 
 if __name__ == "__main__":
-    app.run(host=HOST, port=PORT)
-    
+    app.run(host="0.0.0.0", port=5000)
